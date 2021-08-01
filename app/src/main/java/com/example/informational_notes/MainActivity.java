@@ -3,6 +3,7 @@ package com.example.informational_notes;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -30,15 +31,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        ItemAdapter itemAdapter = new ItemAdapter(new String[]{
-                "one",
-                "two",
-                "three",
-                "four",
-                "five"
-        });
+
+        CardSource cardSource = new CardSourceImpl(this);
+
+        ItemAdapter adapter = new ItemAdapter(cardSource);
+
+
         recyclerView.setHasFixedSize(true); // если у нас все элементы одинакого размера, тот это действие делает работу recyclerView быстрее.
-        recyclerView.setAdapter(itemAdapter);
+        recyclerView.setAdapter(adapter);
+
+//        adapter.setListener(position -> {
+//            Toast.makeText(this, "Click to " + data[position], Toast.LENGTH_SHORT)
+//                    .show();
+//
+//        });
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
