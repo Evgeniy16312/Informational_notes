@@ -1,5 +1,6 @@
 package com.example.informational_notes;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -14,6 +15,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.informational_notes.databinding.ActivityMainBinding;
@@ -40,11 +44,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true); // если у нас все элементы одинакого размера, тот это действие делает работу recyclerView быстрее.
         recyclerView.setAdapter(adapter);
 
-//        adapter.setListener(position -> {
-//            Toast.makeText(this, "Click to " + data[position], Toast.LENGTH_SHORT)
-//                    .show();
-//
-//        });
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider, null));
+        recyclerView.addItemDecoration(itemDecoration);
+
+        // меняем Layout у recycleView при повороте экрана (делаем в 2 столбца)
+        int SpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1;
+        recyclerView.setLayoutManager(new GridLayoutManager(this,SpanCount));
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
