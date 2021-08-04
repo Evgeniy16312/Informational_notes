@@ -5,12 +5,12 @@
         android:id="@+id/action_delete"
         android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="10"
-        android:title="@string/add"
+        android:title="@string/удалить"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_update"
         android:icon="@android:drawable/ic_notification_clear_all"
         android:orderInCategory="10"
-        android:title="@string/clear"
+        android:title="@string/обновить"
         app:showAsAction="never" />
 </menu>

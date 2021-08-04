@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private CardSource cardSource;
     private RecyclerView recyclerView;
+    private int currentPosition = -1;
 
 
     @Override
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-         recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
 
         cardSource = new CardSourceImpl(this);
 
@@ -55,20 +56,19 @@ public class MainActivity extends AppCompatActivity {
         int SpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, SpanCount));
 
+        adapter.setListener((view, position) -> {
+            currentPosition = position;
+            view.showContextMenu(20, 20);
+        });
+
         registerForContextMenu(recyclerView);
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make
+                (view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
                 .setDrawerLayout(drawer)
@@ -102,20 +102,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.card_menu,menu);
+        getMenuInflater().inflate(R.menu.card_menu, menu);
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-//                cardSource.deleteCardData();
-//                adapter.notifyItemRemoved();
+                cardSource.deleteCardData(currentPosition);
+                adapter.notifyItemRemoved(currentPosition);
 
                 return true;
             case R.id.action_update:
-                cardSource.clearCardData();
-                adapter.notifyDataSetChanged();
+                cardSource.updateCardData(currentPosition, new CardData(getResources().getString(R.string.title6),
+                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false));
+                adapter.notifyItemChanged(currentPosition);
                 return true;
         }
         return super.onOptionsItemSelected(item);
