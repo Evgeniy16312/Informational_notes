@@ -6,6 +6,7 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.view.animation.OvershootInterpolator;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -14,12 +15,15 @@ import androidx.annotation.NonNull;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.informational_notes.databinding.ActivityMainBinding;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,6 +59,18 @@ public class MainActivity extends AppCompatActivity {
         // меняем Layout у recycleView при повороте экрана (делаем в 2 столбца)
         int SpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, SpanCount));
+
+//        DefaultItemAnimator animator = new DefaultItemAnimator();
+//        animator.setAddDuration(1000);
+//        animator.setChangeDuration(1000);
+//        animator.setRemoveDuration(1000);
+
+        SlideInLeftAnimator animator = new SlideInLeftAnimator(new OvershootInterpolator());
+        animator.setAddDuration(150);
+        animator.setChangeDuration(150);
+        animator.setMoveDuration(150);
+        animator.setRemoveDuration(150);
+        recyclerView.setItemAnimator(animator);
 
         adapter.setListener((view, position) -> {
             currentPosition = position;
