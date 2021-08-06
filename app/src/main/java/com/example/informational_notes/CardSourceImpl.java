@@ -8,9 +8,17 @@ import java.util.List;
 
 public class CardSourceImpl implements CardSource {
 
+    private Context context;
     private List<CardData> cards;
 
     public CardSourceImpl(Context context) {
+        this.context = context;
+
+    }
+
+
+    @Override
+    public CardSource init(CardSourceResponse response) {
         cards = new ArrayList<>(Arrays.asList(
                 new CardData(
                         context.getResources().getString(R.string.title1),
@@ -42,8 +50,13 @@ public class CardSourceImpl implements CardSource {
                         R.drawable.brasil_spider,
                         false
                 )));
-    }
 
+        if (response != null) {
+            response.initialized(this);
+        }
+
+        return this;
+    }
 
     @Override
     public CardData getCardData(int position) {

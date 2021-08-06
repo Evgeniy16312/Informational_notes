@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
+        cardSource.init(cardSource -> adapter.notifyDataSetChanged());
+
         cardSource = new CardSourceImpl(this);
 
         adapter = new ItemAdapter(cardSource);
@@ -60,10 +62,6 @@ public class MainActivity extends AppCompatActivity {
         int SpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1;
         recyclerView.setLayoutManager(new GridLayoutManager(this, SpanCount));
 
-//        DefaultItemAnimator animator = new DefaultItemAnimator();
-//        animator.setAddDuration(1000);
-//        animator.setChangeDuration(1000);
-//        animator.setRemoveDuration(1000);
 
         SlideInLeftAnimator animator = new SlideInLeftAnimator(new OvershootInterpolator());
         animator.setAddDuration(150);

@@ -1,6 +1,9 @@
 package com.example.informational_notes;
 
 public interface CardSource {
+
+    CardSource init (CardSourceResponse response);
+
     CardData getCardData(int position);
 
     int size();
