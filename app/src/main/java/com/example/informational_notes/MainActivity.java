@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.informational_notes.databinding.ActivityMainBinding;
 
+import java.util.UUID;
+
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         cardSource.init(cardSource -> adapter.notifyDataSetChanged());
 
-        cardSource = new CardSourceImpl(this);
+        cardSource = new CardsSourceFirebaseImpl();
 
         adapter = new ItemAdapter(cardSource);
 
@@ -100,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                cardSource.addCardData(new CardData(getResources().getString(R.string.title6),
-                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false));
+                CardData cardData = new CardData(getResources().getString(R.string.title6),
+                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false);
+                cardData.setId(UUID.randomUUID().toString());
+                cardSource.addCardData(cardData);
                 adapter.notifyItemChanged(cardSource.size() - 1);
                 recyclerView.scrollToPosition(cardSource.size() - 1);
                 return true;
@@ -128,8 +132,10 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_update:
-                cardSource.updateCardData(currentPosition, new CardData(getResources().getString(R.string.title6),
-                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false));
+                CardData cardData = new CardData(getResources().getString(R.string.title6),
+                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false);
+                cardData.setId(cardSource.getCardData(currentPosition).getId());
+                cardSource.updateCardData(currentPosition, cardData);
                 adapter.notifyItemChanged(currentPosition);
                 return true;
         }
