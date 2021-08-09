@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 public class CardData implements Serializable {
 
-    @Exclude
     private String id;
     private String title;
     private String description;

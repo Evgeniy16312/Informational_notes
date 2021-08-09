@@ -5,8 +5,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -71,14 +73,14 @@ public class CardsSourceFirebaseImpl implements CardSource {
 
     @Override
     public void addCardData(CardData cardData) {
-        collection.document(cardData.getId()).set(cardData).addOnCompleteListener(new OnCompleteListener<Void>() {
+        collection.add(cardData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                task.isSuccessful();
+            public void onSuccess(DocumentReference documentReference) {
+                cardData.setId(documentReference.getId());
             }
         });
         cards.add(cardData);
-    }
+            }
 
     @Override
     public void clearCardData() {
