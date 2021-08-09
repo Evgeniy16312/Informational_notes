@@ -2,13 +2,20 @@ package com.example.informational_notes;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.view.animation.OvershootInterpolator;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.NonNull;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,10 +23,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.informational_notes.databinding.ActivityMainBinding;
 
+import java.util.UUID;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+
 public class MainActivity extends AppCompatActivity {
 
+    private ItemAdapter adapter;
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    private CardSource cardSource;
+    private RecyclerView recyclerView;
+    private int currentPosition = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +44,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
 
-        CardSource cardSource = new CardSourceImpl(this);
 
-        ItemAdapter adapter = new ItemAdapter(cardSource);
+        cardSource = new CardsSourceFirebaseImpl();
 
+        adapter = new ItemAdapter(cardSource);
+
+        cardSource.init(cardSource -> adapter.notifyDataSetChanged());
 
         recyclerView.setHasFixedSize(true); // если у нас все элементы одинакого размера, тот это действие делает работу recyclerView быстрее.
         recyclerView.setAdapter(adapter);
@@ -44,20 +62,29 @@ public class MainActivity extends AppCompatActivity {
 
         // меняем Layout у recycleView при повороте экрана (делаем в 2 столбца)
         int SpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 2 : 1;
-        recyclerView.setLayoutManager(new GridLayoutManager(this,SpanCount));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, SpanCount));
+
+
+        SlideInLeftAnimator animator = new SlideInLeftAnimator(new OvershootInterpolator());
+        animator.setAddDuration(150);
+        animator.setChangeDuration(150);
+        animator.setMoveDuration(150);
+        animator.setRemoveDuration(150);
+        recyclerView.setItemAnimator(animator);
+
+        adapter.setListener((view, position) -> {
+            currentPosition = position;
+            view.showContextMenu(20, 20);
+        });
+
+        registerForContextMenu(recyclerView);
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make
+                (view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
                 .setDrawerLayout(drawer)
@@ -67,8 +94,51 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.cards_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                CardData cardData = new CardData(getResources().getString(R.string.title6),
+                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false);
+                cardData.setId(UUID.randomUUID().toString());
+                cardSource.addCardData(cardData);
+                adapter.notifyItemChanged(cardSource.size() - 1);
+                recyclerView.scrollToPosition(cardSource.size() - 1);
+                return true;
+            case R.id.action_clear:
+                cardSource.clearCardData();
+                adapter.notifyDataSetChanged();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.card_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                cardSource.deleteCardData(currentPosition);
+                adapter.notifyItemRemoved(currentPosition);
+
+                return true;
+            case R.id.action_update:
+                CardData cardData = new CardData(getResources().getString(R.string.title6),
+                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false);
+                cardData.setId(cardSource.getCardData(currentPosition).getId());
+                cardSource.updateCardData(currentPosition, cardData);
+                adapter.notifyItemChanged(currentPosition);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -16,14 +16,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
 
+
     private CardSource dataSource;
-    private AdapterView.OnItemClickListener listener;
+    private OnItemClickListener listener;
 
     public ItemAdapter(CardSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public void setListener(@Nullable AdapterView.OnItemClickListener listener) {
+    public void setListener(@Nullable OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -72,11 +73,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             description.setText(cardData.getDescription());
             imageView.setImageResource(cardData.getPicture());
             like.setChecked(cardData.isLike());
+
+            imageView.setOnClickListener(v -> listener.onItemClick(imageView, getLayoutPosition()));
         }
     }
 
-    interface onItemClickListener {
-        void onItemClick(int position);
+    interface OnItemClickListener {
+        void onItemClick(@NonNull View view, int position);
     }
 }
 
