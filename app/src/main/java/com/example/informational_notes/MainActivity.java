@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-        cardSource.init(cardSource -> adapter.notifyDataSetChanged());
 
         cardSource = new CardsSourceFirebaseImpl();
 
         adapter = new ItemAdapter(cardSource);
 
+        cardSource.init(cardSource -> adapter.notifyDataSetChanged());
 
         recyclerView.setHasFixedSize(true); // если у нас все элементы одинакого размера, тот это действие делает работу recyclerView быстрее.
         recyclerView.setAdapter(adapter);
