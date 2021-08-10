@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-
         cardSource = new CardsSourceFirebaseImpl();
 
         adapter = new ItemAdapter(cardSource);
@@ -102,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                CardData cardData = new CardData(getResources().getString(R.string.title6),
-                        getResources().getString(R.string.description6), R.drawable.pauk_pticeed, false);
+                CardData cardData = new CardData(getResources().getString(R.string.title5),
+                        getResources().getString(R.string.description5), R.drawable.brasil_spider, false);
                 cardData.setId(UUID.randomUUID().toString());
                 cardSource.addCardData(cardData);
                 adapter.notifyItemChanged(cardSource.size() - 1);

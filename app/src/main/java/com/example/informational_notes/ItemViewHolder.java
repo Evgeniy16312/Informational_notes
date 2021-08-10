@@ -3,7 +3,6 @@ package com.example.informational_notes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
 
 
     private CardSource dataSource;
@@ -82,5 +81,3 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         void onItemClick(@NonNull View view, int position);
     }
 }
-
-
