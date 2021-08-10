@@ -16,7 +16,6 @@ public class CardSourceImpl implements CardSource {
 
     }
 
-
     @Override
     public CardSource init(CardSourceResponse response) {
         cards = new ArrayList<>(Arrays.asList(
