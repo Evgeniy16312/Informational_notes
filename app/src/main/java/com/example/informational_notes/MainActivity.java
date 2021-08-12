@@ -1,5 +1,6 @@
 package com.example.informational_notes;
 
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -7,11 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -126,8 +129,36 @@ public class MainActivity extends AppCompatActivity {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                cardSource.deleteCardData(currentPosition);
-                adapter.notifyItemRemoved(currentPosition);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                // В билдере указываем заголовок окна. Можно указывать как ресурс,
+                // так и строку
+                builder.setTitle("Удалить картинку")
+                        // Указываем сообщение в окне. Также есть вариант со
+                        // строковым параметром
+                        .setMessage("Вы уверены что хотите удалить ?")
+                        // Можно указать и пиктограмму
+                        .setIcon(R.mipmap.ic_launcher_round)
+                        // Из этого окна нельзя выйти кнопкой Back
+                        .setCancelable(false)
+                        // Устанавливаем кнопку. Название кнопки также можно
+                        // задавать строкой
+                        .setPositiveButton("Да",
+                                // Ставим слушатель, нажатие будем обрабатывать
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        cardSource.deleteCardData(currentPosition);
+                                        adapter.notifyItemRemoved(currentPosition);
+                                    }
+                                }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "отмена действия", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                Toast.makeText(MainActivity.this, "Диалог открыт", Toast.LENGTH_SHORT).show();
 
                 return true;
             case R.id.action_update:
